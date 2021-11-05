@@ -5,7 +5,8 @@
 
 // Sets default values
 APlayerCharacter::APlayerCharacter() :
-PlayerMovementFactor(30)
+PlayerMovementFactor(30),
+bSelectPressed(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -39,6 +40,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("Move", this, &APlayerCharacter::Movement);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayerCharacter::PlayerJump);
 	
+	PlayerInputComponent->BindAction("Select", IE_Pressed, this, &APlayerCharacter::SelectPressed);
+	PlayerInputComponent->BindAction("Select", IE_Pressed, this, &APlayerCharacter::SelectReleased);
+	
 }
 
 void APlayerCharacter::Movement(float Value)
@@ -51,6 +55,16 @@ void APlayerCharacter::Movement(float Value)
 void APlayerCharacter::PlayerJump()
 {
 	Jump();
+}
+
+void APlayerCharacter::SelectPressed()
+{
+	bSelectPressed = true;
+}
+
+void APlayerCharacter::SelectReleased()
+{
+	bSelectPressed = false;
 }
 
 

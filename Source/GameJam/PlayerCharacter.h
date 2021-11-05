@@ -31,11 +31,18 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
 	float PlayerMovementFactor;
 
+	bool bSelectPressed;
+
 protected:
 
 	void Movement(float Value);
 	void PlayerJump();
 
+	void SelectPressed();
+	void SelectReleased();
+
 public:
+
+	FORCEINLINE bool GetIsSelectPressed(){return bSelectPressed;}
 
 };
