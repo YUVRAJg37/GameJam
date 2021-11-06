@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -31,7 +33,15 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
 	float PlayerMovementFactor;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
+	UCameraComponent* CameraComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
+	USpringArmComponent* SpringArmComponent;
+
 	bool bSelectPressed;
+
+	float PlayerScore;
 
 protected:
 
@@ -44,5 +54,7 @@ protected:
 public:
 
 	FORCEINLINE bool GetIsSelectPressed(){return bSelectPressed;}
+	FORCEINLINE float GetPlayerScore(){return PlayerScore;}
+	FORCEINLINE void SetPlayerScore(float Value){PlayerScore+=Value;}
 
 };

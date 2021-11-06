@@ -14,10 +14,10 @@ void APlayerCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TArray<AActor*> cameraActor;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld() ,ACameraActor::StaticClass(), cameraActor);
-
-	FViewTargetTransitionParams TransitionParams;
-	SetViewTarget(cameraActor[0], TransitionParams);
+	// TArray<AActor*> cameraActor;
+	// UGameplayStatics::GetAllActorsOfClass(GetWorld() ,ACameraActor::StaticClass(), cameraActor);
+	//
+	// FViewTargetTransitionParams TransitionParams;
+	// SetViewTarget(cameraActor[0], TransitionParams);
 	
 }

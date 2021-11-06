@@ -6,15 +6,23 @@
 // Sets default values
 APlayerCharacter::APlayerCharacter() :
 PlayerMovementFactor(30),
-bSelectPressed(false)
+bSelectPressed(false),
+PlayerScore(0)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("Spring Arm Component");
+	SpringArmComponent->SetupAttachment(GetRootComponent());
+
+	CameraComponent = CreateDefaultSubobject<UCameraComponent>("Camera Component");
+	CameraComponent->SetupAttachment(SpringArmComponent);
 
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetEnableGravity(true);
 	GetMesh()->SetConstraintMode(EDOFMode::YZPlane);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	
 
 }
 
@@ -29,6 +37,11 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if(GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, -1, FColor::Red, FString::Printf(TEXT("Score : %f"), PlayerScore));
+	}
 
 }
 
