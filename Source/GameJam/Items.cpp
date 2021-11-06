@@ -3,10 +3,14 @@
 
 #include "Items.h"
 
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 AItems::AItems() :
 ItemRotateFactor(10.0f),
-ItemScoreValue(10.0f)
+ItemScoreValue(10.0f),
+InterpSpeed(10),
+bInterping(false)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -41,6 +45,8 @@ void AItems::Tick(float DeltaTime)
 
 	ItemMesh->AddLocalRotation(FRotator{0,ItemRotateFactor*GetWorld()->GetDeltaSeconds(), 0});
 
+	InterpPosition(DeltaTime);
+
 }
 
 void AItems::OnBeginOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -51,9 +57,24 @@ void AItems::OnBeginOverLap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 	if(PlayerCharacter)
 	{
 		PlayerCharacter->SetPlayerScore(ItemScoreValue);
-		Destroy();
+		bInterping = true;
 	}
 	
+}
+
+void AItems::InterpPosition(float DeltaTime)
+{
+	if(bInterping)
+	{
+		FVector playerPosition = PlayerCharacter->GetActorLocation();
+		FVector itemPosition = GetActorLocation();
+
+		FVector interpPosition =  FMath::VInterpTo(itemPosition, playerPosition, DeltaTime, InterpSpeed);
+	
+		SetActorLocation(interpPosition);
+
+		Destroy();
+	}
 }
 
 

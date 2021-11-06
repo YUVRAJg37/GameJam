@@ -41,10 +41,17 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Properties, meta=(AllowPrivateAccess = "true"))
 	float ItemScoreValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Properties, meta=(AllowPrivateAccess = "true"))
+	float InterpSpeed;
+
+	bool bInterping;
 	
 protected:
 
 	APlayerCharacter* PlayerCharacter;
+
+	void InterpPosition(float DeltaTime);
 
 public:
 
