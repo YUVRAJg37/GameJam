@@ -39,9 +39,17 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
 	USpringArmComponent* SpringArmComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
+	float JumpHeight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
+	float DashDistance;
+	
 	bool bSelectPressed;
 
 	float PlayerScore;
+
+	int32 JumpCounter;
 
 protected:
 
@@ -50,6 +58,10 @@ protected:
 
 	void SelectPressed();
 	void SelectReleased();
+
+	void Landed(const FHitResult& Hit) override;
+
+	void Dash();
 
 public:
 

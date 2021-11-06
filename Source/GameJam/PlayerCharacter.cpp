@@ -3,11 +3,16 @@
 
 #include "PlayerCharacter.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
+
 // Sets default values
 APlayerCharacter::APlayerCharacter() :
 PlayerMovementFactor(30),
 bSelectPressed(false),
-PlayerScore(0)
+PlayerScore(0),
+JumpCounter(0),
+JumpHeight(100),
+DashDistance(200)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -55,19 +60,34 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	
 	PlayerInputComponent->BindAction("Select", IE_Pressed, this, &APlayerCharacter::SelectPressed);
 	PlayerInputComponent->BindAction("Select", IE_Pressed, this, &APlayerCharacter::SelectReleased);
+	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &APlayerCharacter::Dash);
 	
 }
 
 void APlayerCharacter::Movement(float Value)
 {
-	FVector movementVector{0, Value, 0};
-	
-	AddMovementInput(movementVector* PlayerMovementFactor* GetWorld()->DeltaTimeSeconds);
+	// FVector movementVector{0, Value, 0};
+	//
+	// AddMovementInput(movementVector* PlayerMovementFactor* GetWorld()->DeltaTimeSeconds);
+
+	if(Controller!=nullptr && Value!=0)
+	{
+		FRotator Rotation = Controller->GetControlRotation();
+		FRotator YawRotation{0, Rotation.Yaw, 0};
+
+		FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		AddMovementInput(Direction, -Value*PlayerMovementFactor*GetWorld()->DeltaTimeSeconds);
+	}
 }
 
 void APlayerCharacter::PlayerJump()
 {
-	Jump();
+	if(JumpCounter<=1)
+	{
+		ACharacter::LaunchCharacter(FVector(0,0,JumpHeight), false, true);
+		JumpCounter++;
+	}
 }
 
 void APlayerCharacter::SelectPressed()
@@ -78,6 +98,19 @@ void APlayerCharacter::SelectPressed()
 void APlayerCharacter::SelectReleased()
 {
 	bSelectPressed = false;
+}
+
+void APlayerCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	JumpCounter = 0;
+}
+
+void APlayerCharacter::Dash()
+{
+	GetCharacterMovement()->BrakingFriction = 0;
+	ACharacter::LaunchCharacter(FVector(0, DashDistance, 0), true, true);
 }
 
 
