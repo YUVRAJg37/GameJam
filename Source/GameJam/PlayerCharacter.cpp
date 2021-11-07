@@ -14,7 +14,7 @@ JumpCounter(0),
 JumpHeight(100),
 DashDistance(200),
 bCanDash(true),
-DashCoolDown(2.0f),
+DashCoolDown(1.0f),
 DashStop(0.2f)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -26,11 +26,21 @@ DashStop(0.2f)
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("Camera Component");
 	CameraComponent->SetupAttachment(SpringArmComponent);
 
+	SpringArmComponent->TargetArmLength = 900.0f;
+	SpringArmComponent->bInheritYaw = false;
+	SpringArmComponent->bEnableCameraLag = true;
+	SpringArmComponent->CameraLagSpeed = 17.0f;
+
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetEnableGravity(true);
 	GetMesh()->SetConstraintMode(EDOFMode::YZPlane);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	
+
+	GetCharacterMovement()->AirControl = 1.0f;
+
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0, 0, -1);
 
 }
 
@@ -69,10 +79,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void APlayerCharacter::Movement(float Value)
 {
-	// FVector movementVector{0, Value, 0};
-	//
-	// AddMovementInput(movementVector* PlayerMovementFactor* GetWorld()->DeltaTimeSeconds);
-
 	if(Controller!=nullptr && Value!=0)
 	{
 		FRotator Rotation = Controller->GetControlRotation();
@@ -116,6 +122,7 @@ void APlayerCharacter::Dash()
 	{
 		bCanDash = false;
 		GetCharacterMovement()->BrakingFriction = 0;
+		GetCharacterMovement()->GravityScale = 0;
 		ACharacter::LaunchCharacter(FVector(0,  GetMesh()->GetForwardVector().Y*DashDistance, 0), true, true);
 		GetWorldTimerManager().SetTimer(DashTimeHandler, this, &APlayerCharacter::DashEnd, DashStop, false);
 	}
@@ -123,9 +130,10 @@ void APlayerCharacter::Dash()
 
 void APlayerCharacter::DashEnd()
 {
+	GetCharacterMovement()->BrakingFriction = 2.0f;
+	GetCharacterMovement()->GravityScale = 1.0f;
 	GetCharacterMovement()->StopMovementImmediately();
 	GetWorldTimerManager().SetTimer(DashCoolDownHandler, this, &APlayerCharacter::DashReset, DashCoolDown, false);
-	GetCharacterMovement()->BrakingFriction = 2.0f;
 }
 
 void APlayerCharacter::DashReset()
