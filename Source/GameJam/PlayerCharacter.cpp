@@ -12,7 +12,10 @@ bSelectPressed(false),
 PlayerScore(0),
 JumpCounter(0),
 JumpHeight(100),
-DashDistance(200)
+DashDistance(200),
+bCanDash(true),
+DashCoolDown(2.0f),
+DashStop(0.2f)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -109,8 +112,25 @@ void APlayerCharacter::Landed(const FHitResult& Hit)
 
 void APlayerCharacter::Dash()
 {
-	GetCharacterMovement()->BrakingFriction = 0;
-	ACharacter::LaunchCharacter(FVector(0, DashDistance, 0), true, true);
+	if(bCanDash)
+	{
+		bCanDash = false;
+		GetCharacterMovement()->BrakingFriction = 0;
+		ACharacter::LaunchCharacter(FVector(0,  GetMesh()->GetForwardVector().Y*DashDistance, 0), true, true);
+		GetWorldTimerManager().SetTimer(DashTimeHandler, this, &APlayerCharacter::DashEnd, DashStop, false);
+	}
+}
+
+void APlayerCharacter::DashEnd()
+{
+	GetCharacterMovement()->StopMovementImmediately();
+	GetWorldTimerManager().SetTimer(DashCoolDownHandler, this, &APlayerCharacter::DashReset, DashCoolDown, false);
+	GetCharacterMovement()->BrakingFriction = 2.0f;
+}
+
+void APlayerCharacter::DashReset()
+{
+	bCanDash = true;
 }
 
 

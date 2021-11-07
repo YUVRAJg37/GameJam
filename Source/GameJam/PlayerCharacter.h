@@ -51,6 +51,15 @@ private:
 
 	int32 JumpCounter;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
+	float DashCoolDown;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
+	float DashStop;
+	
+	bool bCanDash;
+	FTimerHandle DashTimeHandler;
+	FTimerHandle DashCoolDownHandler;
+
 protected:
 
 	void Movement(float Value);
@@ -62,6 +71,8 @@ protected:
 	void Landed(const FHitResult& Hit) override;
 
 	void Dash();
+	void DashEnd();
+	void DashReset();
 
 public:
 
