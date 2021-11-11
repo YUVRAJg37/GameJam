@@ -3,9 +3,6 @@
 
 #include "PlayerCharacterController.h"
 
-#include "Camera/CameraActor.h"
-#include "Kismet/GameplayStatics.h"
-
 APlayerCharacterController::APlayerCharacterController()
 {
 }
