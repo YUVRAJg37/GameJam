@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -31,7 +33,32 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
 	float PlayerMovementFactor;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
+	UCameraComponent* CameraComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
+	USpringArmComponent* SpringArmComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
+	float JumpHeight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
+	float DashDistance;
+	
 	bool bSelectPressed;
+
+	float PlayerScore;
+
+	int32 JumpCounter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
+	float DashCoolDown;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
+	float DashStop;
+	
+	bool bCanDash;
+	FTimerHandle DashTimeHandler;
+	FTimerHandle DashCoolDownHandler;
 
 protected:
 
@@ -41,8 +68,16 @@ protected:
 	void SelectPressed();
 	void SelectReleased();
 
+	void Landed(const FHitResult& Hit) override;
+
+	void Dash();
+	void DashEnd();
+	void DashReset();
+
 public:
 
 	FORCEINLINE bool GetIsSelectPressed(){return bSelectPressed;}
+	FORCEINLINE float GetPlayerScore(){return PlayerScore;}
+	FORCEINLINE void SetPlayerScore(float Value){PlayerScore+=Value;}
 
 };
