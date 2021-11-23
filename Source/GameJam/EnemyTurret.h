@@ -31,9 +31,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Values, meta = (AllowPrivateAccess = "true"))
 	float TargetDistance;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Values, meta = (AllowPrivateAccess = "true"))
+	float FireRate;
+	FTimerHandle TurretHandle;
+	
 protected:
 
-	bool bIsInRange();
+	bool bIsInRange(float Range);
 	void Shoot();
+	void TurretLogic();
 
 };

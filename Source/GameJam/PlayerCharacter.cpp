@@ -14,8 +14,10 @@ JumpCounter(0),
 JumpHeight(100),
 DashDistance(200),
 bCanDash(true),
-DashCoolDown(1.0f),
-DashStop(0.2f)
+DashDelay(0.5f),
+DashStop(0.2f),
+MaxDash(2.0f),
+DashCoolDown(2.0f)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -58,7 +60,8 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 	if(GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(1, -1, FColor::Red, FString::Printf(TEXT("Score : %f"), PlayerScore));
+		GEngine->AddOnScreenDebugMessage(1, -1, FColor::Red, FString::Printf(TEXT("MaxDash : %i"), MaxDash));
+		// GEngine->AddOnScreenDebugMessage(3, -1, FColor::Green, FString::Printf(TEXT("Score : %f"), PlayerScore));
 	}
 
 }
@@ -118,13 +121,16 @@ void APlayerCharacter::Landed(const FHitResult& Hit)
 
 void APlayerCharacter::Dash()
 {
-	if(bCanDash)
+	if(bCanDash && (MaxDash>0 && MaxDash<=2))
 	{
 		bCanDash = false;
 		GetCharacterMovement()->BrakingFriction = 0;
 		GetCharacterMovement()->GravityScale = 0;
 		ACharacter::LaunchCharacter(FVector(0,  GetMesh()->GetForwardVector().Y*DashDistance, 0), true, true);
+		
 		GetWorldTimerManager().SetTimer(DashTimeHandler, this, &APlayerCharacter::DashEnd, DashStop, false);
+		GetWorldTimerManager().SetTimer(DashCoolDownIncrementHandle, this, &APlayerCharacter::DashIncrement, DashCoolDown, false);
+		MaxDash--;
 	}
 }
 
@@ -133,12 +139,18 @@ void APlayerCharacter::DashEnd()
 	GetCharacterMovement()->BrakingFriction = 2.0f;
 	GetCharacterMovement()->GravityScale = 1.0f;
 	GetCharacterMovement()->StopMovementImmediately();
-	GetWorldTimerManager().SetTimer(DashCoolDownHandler, this, &APlayerCharacter::DashReset, DashCoolDown, false);
+	GetWorldTimerManager().SetTimer(DashCoolDownHandler, this, &APlayerCharacter::DashReset, DashDelay, false);
 }
 
 void APlayerCharacter::DashReset()
 {
 	bCanDash = true;
 }
+
+void APlayerCharacter::DashIncrement()
+{
+	MaxDash++;
+}
+
 
 

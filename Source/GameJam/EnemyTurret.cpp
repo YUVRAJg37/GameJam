@@ -8,7 +8,8 @@
 
 // Sets default values
 AEnemyTurret::AEnemyTurret() :
-TargetDistance(500.0f)
+TargetDistance(500.0f),
+FireRate(1.0f)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -22,9 +23,8 @@ TargetDistance(500.0f)
 void AEnemyTurret::BeginPlay()
 {
 	Super::BeginPlay();
-
 	
-	
+	TurretLogic();
 }
 
 // Called every frame
@@ -32,18 +32,16 @@ void AEnemyTurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Shoot();
-
 }
 
-bool AEnemyTurret::bIsInRange()
+bool AEnemyTurret::bIsInRange(float Range)
 {
 	APlayerCharacter* playerCharacter;
 	playerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
 	if(playerCharacter)
 	{
-		if(FVector::Dist(playerCharacter->GetActorLocation(), GetActorLocation()) <= TargetDistance)
+		if(FVector::Dist(playerCharacter->GetActorLocation(), GetActorLocation()) <= Range)
 		{
 			return true;
 		}
@@ -54,10 +52,15 @@ bool AEnemyTurret::bIsInRange()
 
 void AEnemyTurret::Shoot()
 {
-	if(bIsInRange())
-	{
 		UE_LOG(LogTemp, Warning, TEXT("Pew Pew"));
+}
+
+void AEnemyTurret::TurretLogic()
+{
+	GetWorldTimerManager().SetTimer(TurretHandle, this, &AEnemyTurret::TurretLogic, FireRate);
+	if(bIsInRange(TargetDistance))
+	{
+		Shoot();
 	}
-	
 }
 

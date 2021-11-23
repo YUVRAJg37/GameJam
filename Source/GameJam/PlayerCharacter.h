@@ -52,13 +52,18 @@ private:
 	int32 JumpCounter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
-	float DashCoolDown;
+	float DashDelay;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
 	float DashStop;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement , meta=(AllowPrivateAccess = "true"))
+	float DashCoolDown;
+	
+	int32 MaxDash;
 	
 	bool bCanDash;
 	FTimerHandle DashTimeHandler;
 	FTimerHandle DashCoolDownHandler;
+	FTimerHandle DashCoolDownIncrementHandle;
 
 protected:
 
@@ -73,6 +78,8 @@ protected:
 	void Dash();
 	void DashEnd();
 	void DashReset();
+	void DashIncrement();
+	
 
 public:
 
